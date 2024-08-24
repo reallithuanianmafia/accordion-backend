@@ -9,7 +9,6 @@ class AccordionController extends Controller
 {
     public function index()
     {
-        // Fetch root accordions (those without a parent_id)
         $accordions = Accordion::whereNull('parent_id')
             ->with('children') // Eager load children
             ->get();
@@ -32,7 +31,6 @@ class AccordionController extends Controller
 
         $accordion = Accordion::create($validated);
 
-        // If a parent_id is provided, associate the new accordion as a child
         if ($validated['parent_id']) {
             $parentAccordion = Accordion::find($validated['parent_id']);
             $parentAccordion->children()->save($accordion);
@@ -47,7 +45,6 @@ class AccordionController extends Controller
         return response()->json($accordion);
     }
 
-
     public function update(Request $request, $id)
     {
         $accordion = Accordion::findOrFail($id);
@@ -60,7 +57,6 @@ class AccordionController extends Controller
 
         $accordion->update($validated);
 
-        // If parent_id is updated, reassign the accordion as a child of a new parent
         if (isset($validated['parent_id'])) {
             $parentAccordion = Accordion::find($validated['parent_id']);
             $parentAccordion->children()->save($accordion);
